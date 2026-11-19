@@ -1,0 +1,70 @@
+---
+# Compliant: hostPort omitted (defaults to 0)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-host-port
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          ports:
+            - containerPort: 8080
+---
+# Compliant: hostPort explicitly zero
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zero-host-port
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          ports:
+            - containerPort: 8080
+              hostPort: 0
+---
+# Compliant at this check's level: host network is host-network's verdict, not this one's
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-network-no-host-port
+spec:
+  hostNetwork: true
+  containers:
+    - name: app
+      ports:
+        - containerPort: 8080
+---
+# Violating: a Pod (its own pod-spec extraction path)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-host-port
+spec:
+  containers:
+    - name: app
+      ports:
+        - containerPort: 5432
+          hostPort: 5432
+          protocol: TCP
+---
+# Violating: multi-protocol entries, protocol omitted on one of them
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-protocol
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          ports:
+            - containerPort: 53
+              hostPort: 53
+              protocol: UDP
+            - containerPort: 53
+              hostPort: 53
+            - containerPort: 8080

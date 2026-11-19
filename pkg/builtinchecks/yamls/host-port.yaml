@@ -1,0 +1,7 @@
+name: "host-port"
+description: "Alert on deployments with container ports bound to host ports"
+remediation: "Do not declare hostPort on container ports; expose workloads through a Service instead so the scheduler can place pods freely."
+scope:
+  objectKinds:
+    - DeploymentLike
+template: "host-port"

@@ -420,6 +420,23 @@ get_value_from() {
   [[ "${count}" == "2" ]]
 }
 
+@test "host-port" {
+  tmp="tests/checks/host-port.yml"
+  cmd="${KUBE_LINTER_BIN} lint --include host-port --do-not-auto-add-defaults --format json ${tmp}"
+  run ${cmd}
+
+  print_info "${status}" "${output}" "${cmd}" "${tmp}"
+  [ "$status" -eq 1 ]
+
+  message1=$(get_value_from "${lines[0]}" '.Reports[0].Object.K8sObject.GroupVersionKind.Kind + ": " + .Reports[0].Diagnostic.Message')
+  message2=$(get_value_from "${lines[0]}" '.Reports[1].Object.K8sObject.GroupVersionKind.Kind + ": " + .Reports[1].Diagnostic.Message')
+  count=$(get_value_from "${lines[0]}" '.Reports | length')
+
+  [[ "${message1}" == "Deployment: port 8080/TCP in container \"app\" is bound to host port 8080." ]]
+  [[ "${message2}" == "DeploymentConfig: port 8080/TCP in container \"app\" is bound to host port 8080." ]]
+  [[ "${count}" == "2" ]]
+}
+
 @test "hpa-minimum-three-replicas" {
   tmp="tests/checks/hpa-minimum-three-replicas.yml"
   cmd="${KUBE_LINTER_BIN} lint --include hpa-minimum-three-replicas --do-not-auto-add-defaults --format json ${tmp}"
