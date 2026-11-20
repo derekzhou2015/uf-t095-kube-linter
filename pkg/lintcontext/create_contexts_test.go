@@ -28,6 +28,9 @@ const (
 )
 
 func TestCreateContextsWithIgnorePaths(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("ignore patterns hardcode POSIX path separators and glob semantics; upstream CI is Linux-only")
+	}
 	ignoredPaths := []string{
 		"../../.github/**",
 		"../../.golangci?yml",
@@ -309,9 +312,9 @@ func TestWarningSuppressionParity(t *testing.T) {
 	})
 
 	t.Run("Kustomize suppresses warnings via handler", func(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("kustomize renderer evalsymlink fails on Windows relative paths; upstream CI is Linux-only")
-	}
+		if runtime.GOOS == "windows" {
+			t.Skip("kustomize renderer evalsymlink fails on Windows relative paths; upstream CI is Linux-only")
+		}
 		// Test that kustomizations with deprecation warnings still load
 		lintCtxs, err := CreateContexts(nil, kustomizeDeprecatedDir)
 		require.NoError(t, err)

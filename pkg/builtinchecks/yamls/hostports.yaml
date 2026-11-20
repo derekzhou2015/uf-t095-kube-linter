@@ -1,0 +1,7 @@
+name: "host-ports"
+description: "Alert on pods/deployment-likes with containers exposing host ports"
+remediation: "Ensure containers do not bind host ports; remove the hostPort field from the container port declarations."
+scope:
+  objectKinds:
+    - DeploymentLike
+template: "host-ports"

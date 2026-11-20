@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dont-fire
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: metrics
+              containerPort: 9090
+              protocol: UDP
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: dont-fire
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          ports:
+            - name: http
+              containerPort: 8080
+            # An explicit zero is the zero value and means no host binding.
+            - name: metrics
+              containerPort: 9090
+              hostPort: 0
+              protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          ports:
+            # Omitted protocol defaults to TCP, matching the ports template convention.
+            - name: http
+              containerPort: 8080
+              hostPort: 8080
+            - name: dns
+              containerPort: 5353
+              hostPort: 5353
+              protocol: UDP
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          ports:
+            - name: http
+              containerPort: 8080
+              hostPort: 8080

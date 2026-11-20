@@ -269,6 +269,15 @@ forbiddenServiceTypes:
 **Remediation**: Ensure the host's process namespace is not shared.
 
 **Template**: [host-pid](templates.md#host-pid)
+## host-ports
+
+**Enabled by default**: Yes
+
+**Description**: Alert on pods/deployment-likes with containers exposing host ports
+
+**Remediation**: Ensure containers do not bind host ports; remove the hostPort field from the container port declarations.
+
+**Template**: [host-ports](templates.md#host-ports)
 ## hpa-minimum-three-replicas
 
 **Enabled by default**: No
